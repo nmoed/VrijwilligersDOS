@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>D.O.S. – Aanmelden vrijwilligerstaken</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Lid-specifieke header: geen navigatie */
+    .lid-header {
+      background: var(--primair);
+      color: #fff;
+      padding: 0 16px;
+    }
+    .lid-header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .lid-logo-club { font-size: 1.5rem; font-weight: 800; letter-spacing: 2px; }
+    .lid-logo-sub  { font-size: .88rem; opacity: .75; }
+
+    /* Welkomstkaart */
+    .welkom-kaart {
+      background: linear-gradient(135deg, var(--primair) 0%, var(--primair-licht) 100%);
+      color: #fff;
+      border-radius: var(--radius-groot);
+      padding: 24px 28px;
+      margin-bottom: 28px;
+      box-shadow: var(--schaduw-hover);
+    }
+    .welkom-kaart h2 { font-size: 1.3rem; margin-bottom: 8px; }
+    .welkom-kaart p  { font-size: .92rem; opacity: .88; line-height: 1.6; }
+    .welkom-kaart .welkom-regel {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+      font-size: .88rem;
+      opacity: .88;
+    }
+
+    /* Geen data beschikbaar */
+    #geen-data {
+      text-align: center;
+      padding: 60px 20px;
+      background: var(--kaart);
+      border-radius: var(--radius);
+      box-shadow: var(--schaduw);
+    }
+    #geen-data .leeg-icoon { font-size: 3rem; margin-bottom: 16px; }
+    #geen-data h3 { color: var(--primair); margin-bottom: 8px; }
+    #geen-data p  { color: var(--tekst-zacht); font-size: .9rem; }
+
+    /* Ververs-knop in koptekst */
+    .lid-koptekst {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .ververs-info {
+      font-size: .78rem;
+      color: var(--tekst-zacht);
+      align-self: flex-end;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== HEADER (geen navigatie) ===== -->
+  <header class="lid-header">
+    <div class="lid-header-inner">
+      <span class="lid-logo-club">D.O.S.</span>
+      <span class="lid-logo-sub">Aanmelden vrijwilligerstaken</span>
+    </div>
+  </header>
+
+  <!-- ===== INHOUD ===== -->
+  <main class="hoofd">
+    <div id="planning-inhoud">
+      <!-- Wordt gevuld door planning.js -->
+      <div style="text-align:center;padding:40px;color:var(--tekst-zacht)">Laden…</div>
+    </div>
+  </main>
+
+  <!-- ===== MODAL ===== -->
+  <div id="modal-overlay" class="modal-overlay verborgen" onclick="sluitModalOpOverlay(event)">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-titel">
+      <div class="modal-koptekst">
+        <h2 id="modal-titel"></h2>
+        <button class="modal-sluit" onclick="sluitModal()" aria-label="Sluiten">&#10005;</button>
+      </div>
+      <div class="modal-inhoud" id="modal-inhoud"></div>
+      <div class="modal-voettekst" id="modal-voettekst"></div>
+    </div>
+  </div>
+
+  <!-- ===== BEVESTIGINGSDIALOOG ===== -->
+  <div id="bevestig-overlay" class="modal-overlay verborgen">
+    <div class="modal modal-klein" role="alertdialog">
+      <div class="modal-koptekst">
+        <h2 id="bevestig-titel">Bevestigen</h2>
+      </div>
+      <div class="modal-inhoud">
+        <p id="bevestig-tekst"></p>
+      </div>
+      <div class="modal-voettekst">
+        <button class="knop secundair" onclick="bevestigAnnuleer()">Annuleren</button>
+        <button class="knop gevaar" id="bevestig-knop">Bevestigen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MELDINGEN ===== -->
+  <div id="toast-container" aria-live="polite"></div>
+
+  <script src="planning.js"></script>
+</body>
+</html>

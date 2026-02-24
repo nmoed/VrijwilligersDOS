@@ -256,7 +256,22 @@ function renderDashboard() {
         <button class="knop secundair" onclick="laadVoorbeeldData()">Demo data laden</button>
       </div>
     </div>
-    ` : ''}
+    ` : `
+    <div class="kaart" style="margin-top:8px;border-left:4px solid var(--accent)">
+      <div class="kaart-koptekst">
+        <h3>🔗 Ledenlink — Planning voor inschrijving</h3>
+        <button class="knop klein accent" onclick="kopieerDashboardLedenLink()">📋 Kopieer link</button>
+      </div>
+      <div class="kaart-inhoud" style="padding-top:8px">
+        <p style="font-size:.82rem;color:var(--tekst-zacht);margin-bottom:8px">
+          Deel deze link met je leden. Ze kunnen zich inschrijven voor taken — zonder toegang tot de rest van het systeem.
+        </p>
+        <div class="tekst-blok" id="dashboard-leden-url" style="font-size:.83rem;word-break:break-all">
+          ${esc(window.location.href.replace(/[^/]*$/, '') + 'planning.html')}
+        </div>
+      </div>
+    </div>
+    `}
   `;
 }
 
@@ -887,14 +902,31 @@ function renderPlanning() {
     </div>`;
   });
 
+  // Bouw ledenlink dynamisch op basis van huidige URL
+  const ledenUrl = window.location.href.replace(/[^/]*$/, '') + 'planning.html';
+
   el.innerHTML = `
     <div class="pagina-koptekst">
       <div>
-        <h2>📅 Planning</h2>
-        <p>Inschrijven voor vrijwilligerstaken van D.O.S.</p>
+        <h2>📅 Planning <span style="font-size:.75rem;font-weight:400;color:var(--tekst-zacht)">(beheerder)</span></h2>
+        <p>Beheer inschrijvingen — leden gebruiken de link hieronder</p>
       </div>
       <div class="koptekst-acties">
         <button class="knop secundair" onclick="naarPagina('taken')">+ Taak aanmaken</button>
+      </div>
+    </div>
+
+    <div class="kaart" style="margin-bottom:20px;border-left:4px solid var(--accent)">
+      <div class="kaart-koptekst">
+        <h3>🔗 Link voor leden</h3>
+        <button class="knop klein accent" onclick="kopieerLedenLink()">📋 Kopieer link</button>
+      </div>
+      <div class="kaart-inhoud" style="padding-top:10px">
+        <p style="font-size:.85rem;color:var(--tekst-zacht);margin-bottom:8px">
+          Stuur deze link naar je leden. Ze zien <strong>alleen de planning</strong>
+          en kunnen zich in- en uitschrijven. Ze hebben geen toegang tot de rest van het systeem.
+        </p>
+        <div class="tekst-blok" id="leden-url-blok" style="font-size:.85rem;word-break:break-all">${esc(ledenUrl)}</div>
       </div>
     </div>
 
@@ -1717,6 +1749,14 @@ function _laadVoorbeeldDataDoen() {
   slaData({ leden, taken });
   toonMelding('Voorbeelddata geladen!', 'succes');
   renderPagina(huidigePagina);
+}
+
+function kopieerLedenLink() {
+  kopieerTekst('leden-url-blok', 'Link gekopieerd! Je kunt hem nu naar je leden sturen.');
+}
+
+function kopieerDashboardLedenLink() {
+  kopieerTekst('dashboard-leden-url', 'Link gekopieerd! Je kunt hem nu naar je leden sturen.');
 }
 
 /* ============================================================
