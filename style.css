@@ -849,6 +849,192 @@ small { font-size: 0.82em; color: var(--tekst-zacht); }
   .modal-koptekst, .modal-inhoud, .modal-voettekst { padding-left: 16px; padding-right: 16px; }
 }
 
+/* === PLANNING PAGINA === */
+.plan-datum-groep { margin-bottom: 32px; }
+
+.plan-datum-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--rand);
+}
+.plan-datum-label {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--primair);
+}
+.plan-datum-label.verleden { color: var(--tekst-zacht); }
+
+.plan-datum-pill {
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: .75rem;
+  font-weight: 700;
+  color: #fff;
+  background: var(--primair-licht);
+  white-space: nowrap;
+}
+.plan-datum-pill.vandaag  { background: var(--accent); }
+.plan-datum-pill.verleden { background: var(--tekst-zacht); }
+.plan-datum-pill.binnenkort { background: var(--succes); }
+
+.plan-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 14px;
+}
+
+.plan-kaart {
+  background: var(--kaart);
+  border-radius: var(--radius);
+  box-shadow: var(--schaduw);
+  padding: 16px;
+  border-left: 4px solid var(--rand-donker);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: box-shadow .2s;
+}
+.plan-kaart:hover  { box-shadow: var(--schaduw-hover); }
+.plan-kaart.vol    { border-left-color: var(--gevaar); }
+.plan-kaart.verleden { opacity: .72; }
+
+.plan-kaart-koptekst {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.plan-taak-naam {
+  font-size: .95rem;
+  font-weight: 600;
+  color: var(--primair);
+  margin-top: 5px;
+}
+.plan-bezet {
+  font-size: .82rem;
+  color: var(--tekst-zacht);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.plan-bezet strong { color: var(--tekst); }
+
+.plan-deelnemers-lijst {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin: 4px 0;
+}
+.plan-deelnemer-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: var(--succes-licht);
+  border: 1px solid var(--succes-rand);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: .87rem;
+  font-weight: 500;
+}
+.plan-uitschrijven-knop {
+  background: none;
+  border: none;
+  color: var(--gevaar);
+  font-size: .75rem;
+  cursor: pointer;
+  padding: 2px 7px;
+  border-radius: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background .15s;
+}
+.plan-uitschrijven-knop:hover { background: var(--gevaar-licht); }
+
+.plan-open-plek {
+  background: var(--achtergrond);
+  border: 1px dashed var(--rand-donker);
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: .82rem;
+  color: var(--tekst-zacht);
+  font-style: italic;
+}
+.plan-geen-deelnemers {
+  font-size: .83rem;
+  color: var(--tekst-zacht);
+  font-style: italic;
+  margin: 4px 0;
+}
+
+.plan-vol-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--gevaar-licht);
+  color: var(--gevaar);
+  border: 1px solid var(--gevaar-rand);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: .83rem;
+  font-weight: 600;
+}
+
+/* === AUTOCOMPLETE ZOEKEN === */
+.inschrijf-uitleg {
+  font-size: .9rem;
+  color: var(--info);
+  margin-bottom: 14px;
+  padding: 11px 14px;
+  background: var(--info-licht);
+  border-left: 3px solid var(--info);
+  border-radius: 0 7px 7px 0;
+  line-height: 1.5;
+}
+
+.suggesties-lijst {
+  border: 1px solid var(--rand);
+  border-radius: 8px;
+  overflow: hidden;
+  max-height: 300px;
+  overflow-y: auto;
+  margin-top: 6px;
+}
+.suggestie-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 11px 14px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--rand);
+  transition: background .12s;
+}
+.suggestie-item:last-child { border-bottom: none; }
+.suggestie-item:hover,
+.suggestie-item:focus { background: #eef4fc; outline: none; }
+.suggestie-naam  { font-size: .92rem; font-weight: 600; color: var(--tekst); }
+.suggestie-email { font-size: .78rem; color: var(--tekst-zacht); }
+.suggestie-leeg  {
+  padding: 16px;
+  color: var(--tekst-zacht);
+  font-size: .88rem;
+  text-align: center;
+  font-style: italic;
+}
+.suggestie-hint  {
+  padding: 12px 14px;
+  color: var(--tekst-zacht);
+  font-size: .85rem;
+  text-align: center;
+  border-top: 1px solid var(--rand);
+  background: var(--achtergrond);
+}
+
 /* === PRINT === */
 @media print {
   .header, .menu-knop, .knop, .knop-icoon, .filter-balk { display: none !important; }

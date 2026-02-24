@@ -150,6 +150,7 @@ function renderPagina(pagina) {
     dashboard: renderDashboard,
     leden:     renderLeden,
     taken:     renderTaken,
+    planning:  renderPlanning,
     bardienst: renderBardienst,
     maillijst: renderMaillijst,
     export:    renderExport,
@@ -819,6 +820,372 @@ function toggleDeelnemer(taakId, lidId, inschrijven, max, checkbox) {
   const badge = document.getElementById('badge-' + lidId);
   if (rij)   rij.classList.toggle('ingeschreven', inschrijven);
   if (badge) badge.innerHTML = inschrijven ? '<span class="badge-klein groen">✓</span>' : '';
+}
+
+/* ============================================================
+   PLANNING
+   ============================================================ */
+
+function renderPlanning() {
+  const { leden, taken } = laadData();
+  const el = document.getElementById('pagina-planning');
+  const nu = new Date();
+  nu.setHours(0, 0, 0, 0);
+
+  // Sorteer taken op datum (oplopend); taken zonder datum achteraan
+  const gesorteerd = [...taken].sort((a, b) => {
+    if (!a.datum && !b.datum) return 0;
+    if (!a.datum) return 1;
+    if (!b.datum) return -1;
+    return new Date(a.datum) - new Date(b.datum);
+  });
+
+  // Groepeer op datum
+  const groepen = new Map();
+  gesorteerd.forEach(taak => {
+    const sleutel = taak.datum || '__geen_datum__';
+    if (!groepen.has(sleutel)) groepen.set(sleutel, []);
+    groepen.get(sleutel).push(taak);
+  });
+
+  // Statistieken voor header
+  const totaalTaken     = taken.length;
+  const volToegwezen    = taken.filter(t => (t.deelnemers || []).length > 0).length;
+  const totaalPlaatsen  = taken.reduce((s, t) => s + (t.maxDeelnemers || TAAK_TYPES[t.type]?.max || 2), 0);
+  const bezettePlaatsen = taken.reduce((s, t) => s + (t.deelnemers || []).length, 0);
+
+  let groepenHTML = '';
+
+  groepen.forEach((taakLijst, sleutel) => {
+    const isGeenDatum = sleutel === '__geen_datum__';
+    const taakDatum   = isGeenDatum ? null : new Date(sleutel + 'T00:00:00');
+    const isVerleden  = !isGeenDatum && taakDatum < nu;
+    const isVandaag   = !isGeenDatum && taakDatum.toDateString() === nu.toDateString();
+    const isBinnenkort = !isGeenDatum && !isVerleden && !isVandaag &&
+                         (taakDatum - nu) / 86400000 <= 14;
+
+    let pill = '';
+    if (isVandaag)    pill = '<span class="plan-datum-pill vandaag">Vandaag</span>';
+    else if (isVerleden) pill = '<span class="plan-datum-pill verleden">Verleden</span>';
+    else if (isBinnenkort) pill = '<span class="plan-datum-pill binnenkort">Binnenkort</span>';
+
+    const datumTekst = isGeenDatum
+      ? 'Nog geen datum gepland'
+      : new Date(sleutel + 'T00:00:00').toLocaleDateString('nl-NL', {
+          weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+        });
+
+    const kaartenHTML = taakLijst.map(taak => renderPlanKaart(taak, leden, isVerleden)).join('');
+
+    groepenHTML += `
+    <div class="plan-datum-groep">
+      <div class="plan-datum-header">
+        <span class="plan-datum-label ${isVerleden ? 'verleden' : ''}">${datumTekst}</span>
+        ${pill}
+      </div>
+      <div class="plan-grid">${kaartenHTML}</div>
+    </div>`;
+  });
+
+  el.innerHTML = `
+    <div class="pagina-koptekst">
+      <div>
+        <h2>📅 Planning</h2>
+        <p>Inschrijven voor vrijwilligerstaken van D.O.S.</p>
+      </div>
+      <div class="koptekst-acties">
+        <button class="knop secundair" onclick="naarPagina('taken')">+ Taak aanmaken</button>
+      </div>
+    </div>
+
+    ${totaalTaken === 0 ? `
+    <div class="leeg-staat">
+      <div class="leeg-icoon">📅</div>
+      <h3>Nog geen taken aangemaakt</h3>
+      <p>Maak eerst taken aan via het Taken-overzicht.</p>
+      <button class="knop primair" onclick="naarPagina('taken')">Ga naar Taken</button>
+    </div>
+    ` : `
+
+    <div class="stat-grid compact" style="margin-bottom:24px">
+      <div class="stat-kaart">
+        <div class="stat-getal">${totaalTaken}</div>
+        <div class="stat-label">Totaal taken</div>
+      </div>
+      <div class="stat-kaart taak">
+        <div class="stat-getal">${bezettePlaatsen}</div>
+        <div class="stat-label">Bezette plaatsen</div>
+      </div>
+      <div class="stat-kaart niets">
+        <div class="stat-getal">${totaalPlaatsen - bezettePlaatsen}</div>
+        <div class="stat-label">Open plaatsen</div>
+      </div>
+      <div class="stat-kaart betaald">
+        <div class="stat-getal">${volToegwezen}</div>
+        <div class="stat-label">Taken met inschrijvingen</div>
+      </div>
+    </div>
+
+    ${groepenHTML}
+    `}
+  `;
+}
+
+function renderPlanKaart(taak, leden, isVerleden) {
+  const type        = TAAK_TYPES[taak.type] || { label: taak.type, kleur: '#666', max: 99 };
+  const max         = taak.maxDeelnemers || type.max;
+  const deelnemers  = (taak.deelnemers || []).map(id => getLid(id, leden)).filter(Boolean);
+  const n           = deelnemers.length;
+  const vol         = n >= max;
+  const openPlekken = Math.max(0, max - n);
+
+  // Bouw open plekken weergave
+  const openPlekHTML = Array.from({ length: openPlekken }, () =>
+    `<li class="plan-open-plek">Open plek…</li>`
+  ).join('');
+
+  return `
+  <div class="plan-kaart ${vol ? 'vol' : ''} ${isVerleden ? 'verleden' : ''}">
+    <div class="plan-kaart-koptekst">
+      <div>
+        <span class="type-badge" style="background:${type.kleur}">${type.label}</span>
+        <h3 class="plan-taak-naam">${esc(taak.naam || type.label)}</h3>
+      </div>
+      ${taak.datum ? `
+      <button class="knop klein secundair" onclick="downloadICS('${taak.id}')"
+              title="Voeg toe aan agenda">📅 Agenda</button>
+      ` : ''}
+    </div>
+
+    <div class="plan-bezet">
+      <div class="voortgang-balk" style="flex:1;margin:0">
+        <div class="voortgang-balk-vulling${vol ? ' vol' : n / max >= 0.8 ? ' bijna' : ''}"
+             style="width:${Math.min(100, Math.round(n/max*100))}%"></div>
+      </div>
+      <strong>${n}</strong> / ${max} plaatsen bezet
+    </div>
+
+    ${n > 0 || openPlekken > 0 ? `
+    <ul class="plan-deelnemers-lijst">
+      ${deelnemers.map(lid => `
+      <li class="plan-deelnemer-item">
+        <span>✓ ${esc(lid.naam)}</span>
+        <button class="plan-uitschrijven-knop"
+                onclick="uitschrijvenLidBevestig('${taak.id}','${lid.id}')"
+                title="Uitschrijven">✕ Uitschrijven</button>
+      </li>`).join('')}
+      ${openPlekHTML}
+    </ul>
+    ` : `<p class="plan-geen-deelnemers">Nog niemand ingeschreven</p>`}
+
+    <div>
+      ${vol ? `
+      <span class="plan-vol-label">🔒 Vol (${n}/${max})</span>
+      ` : `
+      <button class="knop primair klein" onclick="toonInschrijfVenster('${taak.id}')">
+        + Inschrijven
+      </button>
+      `}
+    </div>
+  </div>`;
+}
+
+/* --- Inschrijven via autocomplete --- */
+
+function toonInschrijfVenster(taakId) {
+  const { leden, taken } = laadData();
+  const taak = taken.find(t => t.id === taakId);
+  if (!taak) return;
+
+  const type = TAAK_TYPES[taak.type] || { label: taak.type, max: 99 };
+  const max  = taak.maxDeelnemers || type.max;
+  const n    = (taak.deelnemers || []).length;
+
+  if (n >= max) { toonMelding('Deze taak is al vol', 'waarschuwing'); return; }
+
+  const html = `
+    <p class="inschrijf-uitleg">
+      Zoek het lid van D.O.S. voor wie je je inschrijft (dit kan ook je kind zijn)
+    </p>
+    <div class="formulier-veld" style="margin-bottom:4px">
+      <input type="search" id="lid-zoek" class="zoek-invoer" style="width:100%"
+             placeholder="Begin met typen om een lid te zoeken..."
+             oninput="updateLidSuggesties('${taakId}', this.value)"
+             autocomplete="off" spellcheck="false">
+    </div>
+    <div id="lid-suggesties">
+      <div class="suggestie-hint">Typ minimaal 1 letter om leden te zoeken</div>
+    </div>
+  `;
+
+  toonModal(
+    `Inschrijven: ${esc(taak.naam || type.label)}`,
+    html,
+    [{ label: 'Annuleren', klasse: 'secundair', actie: 'sluitModal()' }]
+  );
+
+  setTimeout(() => document.getElementById('lid-zoek')?.focus(), 80);
+}
+
+function updateLidSuggesties(taakId, zoek) {
+  const { leden, taken } = laadData();
+  const taak = taken.find(t => t.id === taakId);
+  if (!taak) return;
+
+  const al    = taak.deelnemers || [];
+  const cont  = document.getElementById('lid-suggesties');
+  if (!cont) return;
+
+  const q = zoek.trim();
+
+  if (!q) {
+    cont.innerHTML = '<div class="suggestie-hint">Typ minimaal 1 letter om leden te zoeken</div>';
+    return;
+  }
+
+  const matches = leden
+    .filter(l =>
+      !al.includes(l.id) &&
+      l.naam.toLowerCase().includes(q.toLowerCase())
+    )
+    .sort((a, b) => {
+      // Namen die beginnen met de zoekterm eerst
+      const aStarts = a.naam.toLowerCase().startsWith(q.toLowerCase());
+      const bStarts = b.naam.toLowerCase().startsWith(q.toLowerCase());
+      if (aStarts && !bStarts) return -1;
+      if (!aStarts && bStarts) return  1;
+      return a.naam.localeCompare(b.naam);
+    })
+    .slice(0, 10);
+
+  if (matches.length === 0) {
+    cont.innerHTML = `<div class="suggestie-leeg">Geen leden gevonden voor "<strong>${esc(q)}</strong>"</div>`;
+    return;
+  }
+
+  cont.innerHTML = `
+    <div class="suggesties-lijst">
+      ${matches.map(l => `
+      <div class="suggestie-item" tabindex="0"
+           onclick="inschrijvenLid('${taakId}','${l.id}')"
+           onkeydown="if(event.key==='Enter')inschrijvenLid('${taakId}','${l.id}')">
+        <span class="suggestie-naam">${esc(l.naam)}</span>
+        ${l.email ? `<span class="suggestie-email">${esc(l.email)}</span>` : ''}
+      </div>`).join('')}
+    </div>
+    ${leden.filter(l => !al.includes(l.id)).length > matches.length
+      ? `<div class="suggestie-hint">Typ meer letters om verder te verfijnen</div>` : ''}
+  `;
+}
+
+function inschrijvenLid(taakId, lidId) {
+  const data = laadData();
+  const taak = data.taken.find(t => t.id === taakId);
+  const lid  = data.leden.find(l => l.id === lidId);
+  if (!taak || !lid) return;
+
+  const max = taak.maxDeelnemers || TAAK_TYPES[taak.type]?.max || 2;
+  if ((taak.deelnemers || []).includes(lidId)) {
+    toonMelding(`${lid.naam} staat al ingeschreven`, 'info'); return;
+  }
+  if ((taak.deelnemers || []).length >= max) {
+    toonMelding('Taak is vol', 'waarschuwing'); return;
+  }
+
+  if (!taak.deelnemers) taak.deelnemers = [];
+  taak.deelnemers.push(lidId);
+
+  slaData(data);
+  sluitModal();
+  toonMelding(`✓ ${lid.naam} ingeschreven!`, 'succes');
+  renderPlanning();
+}
+
+function uitschrijvenLid(taakId, lidId) {
+  const data = laadData();
+  const taak = data.taken.find(t => t.id === taakId);
+  const lid  = data.leden.find(l => l.id === lidId);
+  if (!taak) return;
+
+  taak.deelnemers = (taak.deelnemers || []).filter(d => d !== lidId);
+  slaData(data);
+  toonMelding(`${lid ? lid.naam : 'Lid'} uitgeschreven`, 'info');
+  renderPlanning();
+}
+
+function uitschrijvenLidBevestig(taakId, lidId) {
+  const { leden } = laadData();
+  const lid = leden.find(l => l.id === lidId);
+  bevestigVerwijder(
+    'Uitschrijven',
+    `Wil je <strong>${esc(lid?.naam || 'dit lid')}</strong> uitschrijven voor deze taak?`,
+    () => uitschrijvenLid(taakId, lidId),
+    'Uitschrijven'
+  );
+}
+
+/* --- ICS agenda-bestand downloaden --- */
+
+function downloadICS(taakId) {
+  const { taken } = laadData();
+  const taak = taken.find(t => t.id === taakId);
+  if (!taak) return;
+
+  const type = TAAK_TYPES[taak.type] || { label: taak.type };
+  const naam = taak.naam || type.label;
+
+  // Tijdstempel voor DTSTAMP (nu, UTC)
+  const nu   = new Date();
+  const dtstamp = nu.toISOString().replace(/[-:.]/g, '').slice(0, 15) + 'Z';
+
+  let dtStart, dtEnd;
+  if (taak.datum) {
+    const d = taak.datum.replace(/-/g, '');
+    // DTEND is de volgende dag (iCal-conventie voor all-day events)
+    const eindeDate = new Date(taak.datum + 'T00:00:00');
+    eindeDate.setDate(eindeDate.getDate() + 1);
+    const dEinde = eindeDate.toISOString().slice(0, 10).replace(/-/g, '');
+    dtStart = `DTSTART;VALUE=DATE:${d}`;
+    dtEnd   = `DTEND;VALUE=DATE:${dEinde}`;
+  } else {
+    // Geen datum: gebruik morgen als placeholder
+    const morgen = new Date(); morgen.setDate(morgen.getDate() + 1);
+    const d    = morgen.toISOString().slice(0, 10).replace(/-/g, '');
+    const d1   = new Date(morgen); d1.setDate(d1.getDate() + 1);
+    const dEnd = d1.toISOString().slice(0, 10).replace(/-/g, '');
+    dtStart = `DTSTART;VALUE=DATE:${d}`;
+    dtEnd   = `DTEND;VALUE=DATE:${dEnd}`;
+  }
+
+  // Beschrijving met type + eventuele beschrijving van de taak
+  const beschr = `Vrijwilligerstaakvoor turnclub D.O.S.\\nTaak: ${naam}\\nType: ${type.label}`
+    + (taak.beschrijving ? `\\n${taak.beschrijving}` : '');
+
+  const icsInhoud = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//D.O.S. Vrijwilligersbeheer//NL',
+    'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH',
+    'BEGIN:VEVENT',
+    `UID:dos-${taak.id}@dos-vrijwilligers.nl`,
+    `DTSTAMP:${dtstamp}`,
+    dtStart,
+    dtEnd,
+    `SUMMARY:D.O.S. – ${naam}`,
+    `DESCRIPTION:${beschr}`,
+    'LOCATION:D.O.S. sporthal',
+    'END:VEVENT',
+    'END:VCALENDAR',
+  ].join('\r\n');
+
+  const blob = new Blob([icsInhoud], { type: 'text/calendar;charset=utf-8' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  const bestandsnaam = `dos-${naam.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${taak.datum || 'nvt'}.ics`;
+  a.href = url; a.download = bestandsnaam; a.click();
+  URL.revokeObjectURL(url);
+  toonMelding('📅 Agenda-bestand gedownload! Open het om toe te voegen aan je agenda.', 'succes');
 }
 
 /* ============================================================
