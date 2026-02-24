@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>D.O.S. Vrijwilligersbeheer</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ===== HEADER ===== -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-club">D.O.S.</span>
+        <span class="logo-sub">Vrijwilligersbeheer</span>
+      </div>
+      <button class="menu-knop" id="menu-knop" onclick="toggleMenu()" aria-label="Menu openen">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+    <nav class="nav" id="nav" role="navigation">
+      <button class="nav-knop actief" data-pagina="dashboard"  onclick="naarPagina('dashboard')">
+        <span class="nav-icoon">📊</span><span>Dashboard</span>
+      </button>
+      <button class="nav-knop" data-pagina="leden"     onclick="naarPagina('leden')">
+        <span class="nav-icoon">👥</span><span>Leden</span>
+      </button>
+      <button class="nav-knop" data-pagina="taken"     onclick="naarPagina('taken')">
+        <span class="nav-icoon">📋</span><span>Taken</span>
+      </button>
+      <button class="nav-knop" data-pagina="bardienst" onclick="naarPagina('bardienst')">
+        <span class="nav-icoon">🍺</span><span>Bardienst</span>
+      </button>
+      <button class="nav-knop" data-pagina="maillijst" onclick="naarPagina('maillijst')">
+        <span class="nav-icoon">📧</span><span>Maillijst</span>
+      </button>
+      <button class="nav-knop" data-pagina="export"    onclick="naarPagina('export')">
+        <span class="nav-icoon">💾</span><span>Export</span>
+      </button>
+    </nav>
+  </header>
+
+  <!-- ===== PAGINA-INHOUD ===== -->
+  <main class="hoofd">
+    <div id="pagina-dashboard"  class="pagina"></div>
+    <div id="pagina-leden"      class="pagina verborgen"></div>
+    <div id="pagina-taken"      class="pagina verborgen"></div>
+    <div id="pagina-bardienst"  class="pagina verborgen"></div>
+    <div id="pagina-maillijst"  class="pagina verborgen"></div>
+    <div id="pagina-export"     class="pagina verborgen"></div>
+  </main>
+
+  <!-- ===== MODAL ===== -->
+  <div id="modal-overlay" class="modal-overlay verborgen" onclick="sluitModalOpOverlay(event)">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-titel">
+      <div class="modal-koptekst">
+        <h2 id="modal-titel"></h2>
+        <button class="modal-sluit" onclick="sluitModal()" aria-label="Sluiten">&#10005;</button>
+      </div>
+      <div class="modal-inhoud" id="modal-inhoud"></div>
+      <div class="modal-voettekst" id="modal-voettekst"></div>
+    </div>
+  </div>
+
+  <!-- ===== BEVESTIGINGSDIALOOG ===== -->
+  <div id="bevestig-overlay" class="modal-overlay verborgen">
+    <div class="modal modal-klein" role="alertdialog">
+      <div class="modal-koptekst">
+        <h2 id="bevestig-titel">Bevestigen</h2>
+      </div>
+      <div class="modal-inhoud">
+        <p id="bevestig-tekst"></p>
+      </div>
+      <div class="modal-voettekst">
+        <button class="knop secundair" onclick="bevestigAnnuleer()">Annuleren</button>
+        <button class="knop gevaar"    id="bevestig-knop">Verwijderen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MELDINGEN ===== -->
+  <div id="toast-container" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
