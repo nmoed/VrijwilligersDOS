@@ -83,11 +83,14 @@ function getDashboardStats() {
     uitTeKeren  += s.teOntvangen;
   });
 
+  const opbrengst = betaald * BOETE;
+  const alUitbetaald = leden.reduce((sum, l) => sum + (l.uitbetaald || 0) * BARDIENST_BONUS, 0);
   return {
     totaal: leden.length,
     taak, betaald, niets,
-    opbrengst: betaald * BOETE,
-    extraTotaal, uitTeKeren,
+    opbrengst,
+    extraTotaal, uitTeKeren, alUitbetaald,
+    netto: opbrengst - uitTeKeren - alUitbetaald,
   };
 }
 
@@ -193,17 +196,24 @@ function renderDashboard() {
         <div class="stat-getal">${s.niets}</div>
         <div class="stat-label">Nog niets gedaan</div>
       </div>
+    </div>
+
+    <div class="stat-grid" style="margin-top:12px">
       <div class="stat-kaart opbrengst">
         <div class="stat-getal">${euro(s.opbrengst)}</div>
-        <div class="stat-label">Opbrengst vrijwilligersbijdragen</div>
+        <div class="stat-label">Opbrengst bijdragen</div>
+      </div>
+      <div class="stat-kaart uitbetalen">
+        <div class="stat-getal">${euro(s.uitTeKeren + s.alUitbetaald)}</div>
+        <div class="stat-label">Teruggave bardiensten</div>
+      </div>
+      <div class="stat-kaart ${s.netto >= 0 ? 'taak' : 'niets'}" style="border-left:4px solid ${s.netto >= 0 ? 'var(--succes)' : 'var(--gevaar)'}">
+        <div class="stat-getal">${euro(s.netto)}</div>
+        <div class="stat-label">Netto resultaat</div>
       </div>
       <div class="stat-kaart bardienst">
         <div class="stat-getal">${s.extraTotaal}</div>
         <div class="stat-label">Extra bardiensten totaal</div>
-      </div>
-      <div class="stat-kaart uitbetalen">
-        <div class="stat-getal">${euro(s.uitTeKeren)}</div>
-        <div class="stat-label">Nog uit te keren aan leden</div>
       </div>
     </div>
 
@@ -1676,78 +1686,165 @@ function laadVoorbeeldData() {
 }
 
 function _laadVoorbeeldDataDoen() {
-  const ids = Array.from({ length: 12 }, () => nieuwId());
-  const taakIds = Array.from({ length: 8 }, () => nieuwId());
-
-  const leden = [
-    { id: ids[0],  naam: 'Anna de Vries',      email: 'anna@voorbeeld.nl',    telefoon: '06-11111111', betaald: false, uitbetaald: 0 },
-    { id: ids[1],  naam: 'Bas Janssen',         email: 'bas@voorbeeld.nl',     telefoon: '06-22222222', betaald: true,  uitbetaald: 0 },
-    { id: ids[2],  naam: 'Carla Smits',         email: 'carla@voorbeeld.nl',   telefoon: '06-33333333', betaald: false, uitbetaald: 0 },
-    { id: ids[3],  naam: 'Daan Bakker',         email: 'daan@voorbeeld.nl',    telefoon: '06-44444444', betaald: false, uitbetaald: 1 },
-    { id: ids[4],  naam: 'Eva Mulder',          email: 'eva@voorbeeld.nl',     telefoon: '',            betaald: true,  uitbetaald: 0 },
-    { id: ids[5],  naam: 'Frank Peters',        email: '',                     telefoon: '06-55555555', betaald: false, uitbetaald: 0 },
-    { id: ids[6],  naam: 'Greet van Dam',       email: 'greet@voorbeeld.nl',   telefoon: '06-66666666', betaald: false, uitbetaald: 0 },
-    { id: ids[7],  naam: 'Hans de Groot',       email: 'hans@voorbeeld.nl',    telefoon: '06-77777777', betaald: false, uitbetaald: 0 },
-    { id: ids[8],  naam: 'Irene Visser',        email: 'irene@voorbeeld.nl',   telefoon: '06-88888888', betaald: true,  uitbetaald: 0 },
-    { id: ids[9],  naam: 'Jan Willems',         email: 'jan@voorbeeld.nl',     telefoon: '',            betaald: false, uitbetaald: 0 },
-    { id: ids[10], naam: 'Karin Bosman',        email: 'karin@voorbeeld.nl',   telefoon: '06-99999999', betaald: false, uitbetaald: 0 },
-    { id: ids[11], naam: 'Lars Hendriks',       email: 'lars@voorbeeld.nl',    telefoon: '06-10101010', betaald: false, uitbetaald: 0 },
+  // --- 500 leden genereren ---
+  const voornamen = [
+    'Emma','Liam','Julia','Noah','Sophie','Daan','Tess','Sem','Anna','Finn',
+    'Evi','Lucas','Sara','Jesse','Fleur','Milan','Noor','Luuk','Lotte','Bram',
+    'Mila','Thijs','Lynn','Tim','Sanne','Stijn','Lisa','Ruben','Femke','Max',
+    'Iris','Thomas','Roos','Niels','Isa','Lars','Jasmijn','Tom','Eva','Rick',
+    'Amy','Dex','Nina','Cas','Vera','Sven','Kim','Mark','Petra','Jan',
+    'Linda','Willem','Fatima','Mohammed','Patrick','Judith','Yvonne','Frank','Greet','Hans',
+    'Karin','Miriam','Rik','Bas','Irene','Carla','Esther','Dennis','Monique','Rob',
+    'Wendy','Marcel','Sandra','Pieter','Angela','Edwin','Bianca','Gerard','Marieke','Joost',
+    'Simone','Arjan','Ilse','Marco','Nathalie','Stefan','Claudia','Jeroen','Ingrid','Peter',
+    'Diana','Erik','Christine','Vincent','Suzanne','Henk','Annemarie','Raymond','Danielle','Martijn'
+  ];
+  const achternamen = [
+    'de Vries','Janssen','Bakker','Visser','Smits','Mulder','de Groot','Bos','Vos','Peters',
+    'Hendriks','van Dijk','van den Berg','Dekker','Brouwer','de Wit','Jansen','Dijkstra','Smit','de Jong',
+    'van Leeuwen','Kuijpers','Willems','Bosman','van Dam','van der Linden','Vermeer','Wolters',
+    'van Houten','Yilmaz','El Amrani','Schouten','de Boer','van Beek','Molenaar','Hoekstra',
+    'de Graaf','Koning','Vogel','Scholten','van Vliet','Post','Prins','Klein','Gerritsen',
+    'van der Meer','van Dongen','Martens','Hermans','Langen'
   ];
 
-  const taken = [
-    {
-      id: taakIds[0], type: 'bardienst', naam: 'Bardienst week 3',
-      datum: '2025-01-15', maxDeelnemers: 2, coordinator: ids[0],
-      beschrijving: '', uitgevoerd: true,
-      deelnemers: [ids[0], ids[2]],
-    },
-    {
-      id: taakIds[1], type: 'bardienst', naam: 'Bardienst week 7',
-      datum: '2025-02-12', maxDeelnemers: 2, coordinator: null,
-      beschrijving: '', uitgevoerd: true,
-      deelnemers: [ids[3], ids[0]],
-    },
-    {
-      id: taakIds[2], type: 'bardienst', naam: 'Bardienst week 11',
-      datum: '2025-03-12', maxDeelnemers: 2, coordinator: null,
-      beschrijving: '', uitgevoerd: false,
-      deelnemers: [ids[6]],
-    },
-    {
-      id: taakIds[3], type: 'schoonmaak', naam: 'Grote schoonmaak 2025',
-      datum: '2025-06-07', maxDeelnemers: 20, coordinator: ids[1],
-      beschrijving: 'Volledige schoonmaak van de zaal en kleedkamers',
-      uitgevoerd: false,
-      deelnemers: [ids[1], ids[7], ids[8]],
-    },
-    {
-      id: taakIds[4], type: 'opbouw', naam: 'Op-/afbouw Regiowedstrijd',
-      datum: '2025-03-22', maxDeelnemers: 10, coordinator: ids[4],
-      beschrijving: '', uitgevoerd: true,
-      deelnemers: [ids[4], ids[5], ids[9], ids[10]],
-    },
-    {
-      id: taakIds[5], type: 'medailles', naam: 'Medailles Regiowedstrijd',
-      datum: '2025-03-22', maxDeelnemers: 5, coordinator: ids[11],
-      beschrijving: '', uitgevoerd: true,
-      deelnemers: [ids[11]],
-    },
-    {
-      id: taakIds[6], type: 'intekenen', naam: 'Intekenen Districtkampioenschap',
-      datum: '2025-04-19', maxDeelnemers: 5, coordinator: null,
-      beschrijving: '', uitgevoerd: false,
-      deelnemers: [],
-    },
-    {
-      id: taakIds[7], type: 'muziek', naam: 'Muziek Districtkampioenschap',
-      datum: '2025-04-19', maxDeelnemers: 2, coordinator: null,
-      beschrijving: '', uitgevoerd: false,
-      deelnemers: [],
-    },
+  const leden = [];
+  const gebruikteNamen = new Set();
+  for (let i = 0; i < 500; i++) {
+    let naam;
+    do {
+      const vn = voornamen[Math.floor(Math.random() * voornamen.length)];
+      const an = achternamen[Math.floor(Math.random() * achternamen.length)];
+      naam = vn + ' ' + an;
+    } while (gebruikteNamen.has(naam));
+    gebruikteNamen.add(naam);
+
+    const emailNaam = naam.toLowerCase().replace(/\s+/g, '.').replace(/[^a-z.]/g, '');
+    // ~30% betaald, ~5% geen email, ~10% geen telefoon
+    const betaald = Math.random() < 0.30;
+    const heeftEmail = Math.random() > 0.05;
+    const heeftTel = Math.random() > 0.10;
+    const telNr = '06-' + String(Math.floor(10000000 + Math.random() * 90000000));
+
+    leden.push({
+      id: nieuwId(),
+      naam,
+      email: heeftEmail ? emailNaam + '@voorbeeld.nl' : '',
+      telefoon: heeftTel ? telNr : '',
+      betaald,
+      uitbetaald: 0,
+    });
+  }
+
+  // Sorteer leden op naam voor overzicht
+  leden.sort((a, b) => a.naam.localeCompare(b.naam));
+
+  // Helper: pak random leden-ids
+  function pakRandom(aantal, uitgesloten) {
+    const beschikbaar = leden.filter(l => !uitgesloten.includes(l.id));
+    const gekozen = [];
+    for (let i = 0; i < Math.min(aantal, beschikbaar.length); i++) {
+      const idx = Math.floor(Math.random() * beschikbaar.length);
+      gekozen.push(beschikbaar[idx].id);
+      beschikbaar.splice(idx, 1);
+    }
+    return gekozen;
+  }
+
+  // --- Taken genereren ---
+  const taken = [];
+  let alleDeelnemers = []; // track wie al een taak heeft
+
+  function maakTaak(type, naam, datum, max, beschrijving, uitgevoerd, aantalDeelnemers) {
+    const deelnemers = pakRandom(aantalDeelnemers, []);
+    aantalDeelnemers > 0 && uitgevoerd && deelnemers.forEach(id => {
+      if (!alleDeelnemers.includes(id)) alleDeelnemers.push(id);
+    });
+    taken.push({
+      id: nieuwId(), type, naam, datum, maxDeelnemers: max,
+      coordinator: deelnemers.length > 0 ? deelnemers[0] : null,
+      beschrijving: beschrijving || '', uitgevoerd,
+      deelnemers,
+    });
+  }
+
+  // === BARDIENSTEN wo+za door het seizoen (2x per week) ===
+  const barData = [
+    // Blok 1: sep-okt 2026 (uitgevoerd)
+    ['2026-09-09','wo'], ['2026-09-12','za'], ['2026-09-16','wo'], ['2026-09-19','za'],
+    ['2026-09-23','wo'], ['2026-09-26','za'], ['2026-09-30','wo'], ['2026-10-03','za'],
+    ['2026-10-07','wo'], ['2026-10-10','za'],
+    // Blok 2: nov-dec 2026 (deels uitgevoerd)
+    ['2026-11-04','wo'], ['2026-11-07','za'], ['2026-11-11','wo'], ['2026-11-14','za'],
+    ['2026-11-18','wo'], ['2026-11-21','za'], ['2026-11-25','wo'], ['2026-11-28','za'],
+    ['2026-12-02','wo'], ['2026-12-05','za'], ['2026-12-09','wo'], ['2026-12-12','za'],
+    // Blok 3: jan-feb 2027 (toekomst)
+    ['2027-01-13','wo'], ['2027-01-16','za'], ['2027-01-20','wo'], ['2027-01-23','za'],
+    ['2027-01-27','wo'], ['2027-01-30','za'], ['2027-02-03','wo'], ['2027-02-06','za'],
+    ['2027-02-10','wo'], ['2027-02-13','za'],
+    // Blok 4: mrt-apr 2027
+    ['2027-03-03','wo'], ['2027-03-06','za'], ['2027-03-10','wo'], ['2027-03-13','za'],
+    ['2027-03-17','wo'], ['2027-03-20','za'], ['2027-03-24','wo'], ['2027-03-27','za'],
+    ['2027-04-07','wo'], ['2027-04-10','za'], ['2027-04-14','wo'], ['2027-04-17','za'],
+    // Blok 5: mei-jun 2027
+    ['2027-05-12','wo'], ['2027-05-15','za'], ['2027-05-19','wo'], ['2027-05-22','za'],
+    ['2027-05-26','wo'], ['2027-05-29','za'], ['2027-06-02','wo'], ['2027-06-05','za'],
+    ['2027-06-09','wo'], ['2027-06-12','za'], ['2027-06-16','wo'], ['2027-06-19','za'],
   ];
+
+  barData.forEach(([datum, dag], i) => {
+    const weekNr = i + 1;
+    const uitgevoerd = datum < '2026-12-01';
+    const deelnemersAantal = uitgevoerd ? 2 : (datum < '2027-02-01' ? Math.random() < 0.6 ? 2 : 1 : Math.random() < 0.3 ? 1 : 0);
+    maakTaak('bardienst', `Bardienst ${dag} week ${weekNr}`, datum, 2,
+      'Shift van 3 uur tijdens de les', uitgevoerd, deelnemersAantal);
+  });
+
+  // Markeer een paar leden als extra-bardienst (uitbetaald)
+  const barTaken = taken.filter(t => t.type === 'bardienst' && t.uitgevoerd);
+  const barDeelnemers = {};
+  barTaken.forEach(t => t.deelnemers.forEach(id => {
+    barDeelnemers[id] = (barDeelnemers[id] || 0) + 1;
+  }));
+  Object.entries(barDeelnemers).forEach(([id, count]) => {
+    if (count > 1) {
+      const lid = leden.find(l => l.id === id);
+      if (lid) lid.uitbetaald = Math.min(count - 1, 2); // max 2 uitbetaald voor demo
+    }
+  });
+
+  // === WEDSTRIJDEN EN EVENEMENTEN ===
+  // Onderlinge wedstrijd (okt) - uitgevoerd
+  maakTaak('opbouw',    'Op-/afbouw Onderlinge wedstrijd',  '2026-10-17', 8,  'Toestellen plaatsen en na afloop opruimen', true, 6);
+  maakTaak('intekenen', 'Intekenen Onderlinge wedstrijd',   '2026-10-17', 4,  'Deelnemers registreren bij binnenkomst', true, 3);
+  maakTaak('scores',    'Scores Onderlinge wedstrijd',      '2026-10-17', 4,  'Scores noteren en diploma\'s klaarzetten', true, 3);
+  maakTaak('medailles', 'Medailles Onderlinge wedstrijd',   '2026-10-17', 4,  '', true, 2);
+
+  // Regiowedstrijd (nov) - deels gevuld
+  maakTaak('opbouw',    'Op-/afbouw Regiowedstrijd',        '2026-11-28', 10, 'Grote opbouw vrijdagavond, afbouw zaterdagavond', false, 5);
+  maakTaak('intekenen', 'Intekenen Regiowedstrijd',         '2026-11-28', 5,  '', false, 2);
+  maakTaak('scores',    'Scores & diploma\'s Regiowed.',    '2026-11-28', 5,  '', false, 1);
+  maakTaak('medailles', 'Medailles Regiowedstrijd',         '2026-11-28', 4,  '', false, 1);
+  maakTaak('muziek',    'Muziek Regiowedstrijd',            '2026-11-28', 2,  'Muziek tijdens opkomst en prijsuitreiking', false, 0);
+  maakTaak('omroeper',  'Spreker Regiowedstrijd',           '2026-11-28', 2,  'Omroepen turners en uitslagen', false, 1);
+
+  // Districtkampioenschap (mrt) - open
+  maakTaak('opbouw',    'Op-/afbouw Districtkamp.',          '2027-03-20', 10, 'Grote opbouw vrijdagavond + afbouw zaterdag', false, 0);
+  maakTaak('intekenen', 'Intekenen Districtkamp.',           '2027-03-20', 5,  '', false, 0);
+  maakTaak('scores',    'Scores Districtkamp.',              '2027-03-20', 5,  '', false, 0);
+  maakTaak('omroeper',  'Spreker Districtkamp.',             '2027-03-20', 2,  'Omroepen van turners en uitslagen', false, 0);
+  maakTaak('medailles', 'Medailles Districtkamp.',           '2027-03-20', 4,  '', false, 0);
+
+  // Clubshow (mei) - open
+  maakTaak('opbouw',    'Op-/afbouw Clubshow',               '2027-05-29', 15, 'Podium, verlichting, stoelen en decoratie', false, 0);
+  maakTaak('muziek',    'Muziek & geluid Clubshow',          '2027-05-29', 2,  'Geluidsinstallatie en muziek tijdens de show', false, 0);
+  maakTaak('intekenen', 'Kaartcontrole Clubshow',            '2027-05-29', 4,  'Kaartjes controleren bij de ingang', false, 0);
+
+  // Grote schoonmaak (jun) - open
+  maakTaak('schoonmaak', 'Grote schoonmaak einde seizoen',   '2027-06-20', 20, 'Volledige schoonmaak van zaal, kleedkamers, kantine en berging', false, 0);
 
   slaData({ leden, taken });
-  toonMelding('Voorbeelddata geladen!', 'succes');
+  toonMelding('Voorbeelddata geladen — 500 leden, ' + taken.length + ' taken!', 'succes');
   renderPagina(huidigePagina);
 }
 

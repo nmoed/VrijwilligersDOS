@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>D.O.S. Vrijwilligersbeleid — Voorstel voor het bestuur</title>
+  <style>
+    @page { margin: 1.8cm; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: #1a1a2e;
+      line-height: 1.65;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 40px 28px 60px;
+      background: #fff;
+    }
+
+    /* Header */
+    .doc-header {
+      border-bottom: 4px solid #1a1a6c;
+      padding-bottom: 20px;
+      margin-bottom: 32px;
+    }
+    .doc-header h1 { font-size: 1.7rem; color: #1a1a6c; margin-bottom: 4px; }
+    .doc-header .subtitel { font-size: 1.05rem; color: #555; }
+    .doc-header .meta { font-size: .82rem; color: #888; margin-top: 8px; }
+
+    /* Sections */
+    h2 {
+      font-size: 1.2rem; color: #1a1a6c;
+      margin: 36px 0 12px; padding-bottom: 4px;
+      border-bottom: 2px solid #e0e0e0;
+    }
+    h3 { font-size: 1rem; color: #333; margin: 18px 0 8px; }
+    p, li { font-size: .92rem; }
+    p { margin-bottom: 10px; }
+    ul, ol { margin-left: 22px; margin-bottom: 12px; }
+    li { margin-bottom: 5px; }
+    strong { color: #1a1a6c; }
+
+    /* Highlight boxes */
+    .highlight {
+      background: #f0f4ff; border-left: 4px solid #1a1a6c;
+      border-radius: 6px; padding: 16px 20px; margin: 16px 0;
+    }
+    .highlight.green  { background: #edfcf2; border-color: #27ae60; }
+    .highlight.orange { background: #fef9ed; border-color: #e67e22; }
+    .highlight.blue   { background: #eef6ff; border-color: #2980b9; }
+
+    /* Workflow schema */
+    .schema { display: flex; flex-direction: column; gap: 0; margin: 20px 0; }
+    .stap { display: flex; align-items: stretch; gap: 14px; }
+    .stap-lijn {
+      display: flex; flex-direction: column; align-items: center;
+      width: 36px; flex-shrink: 0;
+    }
+    .stap-nummer {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: #1a1a6c; color: #fff; font-weight: 700; font-size: .85rem;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .stap-streep { flex: 1; width: 3px; background: #d0d4e8; min-height: 16px; }
+    .stap-inhoud {
+      background: #fafbfe; border: 1px solid #e4e7f0;
+      border-radius: 8px; padding: 12px 16px; flex: 1; margin-bottom: 10px;
+    }
+    .stap-inhoud h4 { font-size: .9rem; color: #1a1a6c; margin-bottom: 4px; }
+    .stap-inhoud p { font-size: .84rem; color: #444; margin-bottom: 0; }
+
+    /* Tabel */
+    table {
+      width: 100%; border-collapse: collapse;
+      margin: 14px 0; font-size: .88rem;
+    }
+    th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid #e0e0e0; }
+    th {
+      background: #f0f4ff; color: #1a1a6c; font-weight: 600;
+      font-size: .82rem; text-transform: uppercase; letter-spacing: .3px;
+    }
+    tr:last-child td { border-bottom: none; }
+    .getal { text-align: right; font-variant-numeric: tabular-nums; }
+
+    /* Kalender mini-tabel */
+    .kalender-tabel td { padding: 6px 12px; font-size: .84rem; }
+    .kalender-tabel .vakantie { background: #fff3f0; color: #c0392b; }
+    .kalender-tabel .actief { background: #edfcf2; }
+    .kalender-tabel .moment { background: #fef9ed; font-weight: 600; }
+
+    /* TODO checklist */
+    .todo-lijst { list-style: none; margin-left: 0; margin-bottom: 16px; }
+    .todo-lijst li {
+      padding: 10px 14px; border: 1px solid #e4e7f0;
+      border-radius: 6px; margin-bottom: 8px; background: #fafbfe;
+      display: flex; align-items: flex-start; gap: 10px;
+    }
+    .todo-lijst .todo-check {
+      width: 20px; height: 20px; border: 2px solid #b0b8d0;
+      border-radius: 4px; flex-shrink: 0; margin-top: 1px;
+    }
+    .todo-lijst .todo-tekst strong { display: block; font-size: .9rem; color: #1a1a6c; }
+    .todo-lijst .todo-tekst span { font-size: .82rem; color: #666; }
+
+    /* ALV agenda */
+    .alv-punt {
+      display: flex; gap: 12px; padding: 10px 0;
+      border-bottom: 1px solid #eee;
+    }
+    .alv-punt:last-child { border-bottom: none; }
+    .alv-tijd {
+      font-size: .82rem; color: #888; min-width: 48px;
+      font-variant-numeric: tabular-nums; padding-top: 2px;
+    }
+    .alv-inhoud strong { display: block; font-size: .9rem; }
+    .alv-inhoud span { font-size: .82rem; color: #555; }
+
+    /* Page break hints for printing */
+    .page-break { page-break-before: always; }
+
+    /* Footer */
+    .doc-footer {
+      margin-top: 40px; padding-top: 16px;
+      border-top: 2px solid #e0e0e0; font-size: .8rem; color: #888;
+    }
+
+    @media print {
+      body { padding: 0; }
+      .no-print { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ============================================================
+       HEADER
+       ============================================================ -->
+  <div class="doc-header">
+    <h1>Voorstel: Vrijwilligersbeleid D.O.S.</h1>
+    <div class="subtitel">Samen sterker — iedereen draagt bij op zijn eigen manier</div>
+    <div class="meta">Bestuursvergadering &middot; 25 februari 2026</div>
+  </div>
+
+  <!-- ============================================================
+       INTRO
+       ============================================================ -->
+  <h2>Samen maken we de vereniging</h2>
+  <p>
+    Onze turnvereniging draait niet alleen om trainingen en wedstrijden, maar vooral om de mensen die haar
+    mogelijk maken. Achter elke activiteit, wedstrijd en gezellige ontmoeting staan vrijwilligers die samen
+    zorgen dat alles goed verloopt. Van ondersteuning bij evenementen tot het draaiend houden van de kantine:
+    het is de gezamenlijke inzet die onze club laat groeien en bloeien.
+  </p>
+  <p>
+    <strong>Samen sterker &mdash; iedereen draagt bij op zijn eigen manier.</strong>
+    Dat is het uitgangspunt waar we als vereniging naartoe willen werken. Niet omdat het moet, maar omdat we
+    samen verantwoordelijk zijn voor een club waar iedereen zich welkom voelt en met plezier deel van uitmaakt.
+  </p>
+  <p>
+    We merken dat het organiseren van vrijwilligerstaken steeds meer vraagt om duidelijke communicatie, goede
+    afstemming en een eerlijke verdeling van inzet. Wanneer taken niet helder zijn georganiseerd, komt de
+    verantwoordelijkheid vaak bij dezelfde mensen terecht. Door vrijwilligerswerk beter te organiseren,
+    willen we het voor iedereen makkelijker maken om bij te dragen op een manier die past bij ieders tijd
+    en mogelijkheden.
+  </p>
+  <p>
+    Daarom werken we aan een nieuw vrijwilligerssysteem dat overzicht biedt, flexibiliteit cre&euml;ert en
+    samenwerking stimuleert. Zo zorgen we ervoor dat taken beter verdeeld worden en dat de vereniging kan
+    blijven draaien op iets wat ons allemaal verbindt: betrokkenheid en goodwill.
+  </p>
+  <p>
+    <strong>Samen bouwen we aan een sterke, gastvrije en toekomstbestendige vereniging &mdash; gedragen door de
+    inzet van ons allemaal.</strong>
+  </p>
+
+  <!-- ============================================================
+       1. INVENTARISATIE
+       ============================================================ -->
+  <h2>1. Inventarisatie: belangrijke input voor het nieuwe plan</h2>
+  <p>
+    Om tot een goed voorstel te komen heb ik een inventarisatie gedaan. Ik heb gesprekken gevoerd met ouders
+    en kennissen die bij andere sportclubs betrokken zijn, om te achterhalen hoe zij het vrijwilligerswerk
+    organiseren en wat daar goed en minder goed werkt. Op basis van die input heb ik een aantal punten
+    ge&iuml;dentificeerd die ik belangrijk vind om mee te nemen in dit voorstel:
+  </p>
+  <ul>
+    <li><strong>Communicatie is vaak waar het misgaat.</strong> Bij veel clubs is de bereidheid om te helpen er wel, maar het loopt spaak doordat niet duidelijk is welke keuzes er zijn, er geen passende optie tussen staat, of de aanmeldprocedure onduidelijk is. Veel ouders gaven ook aan dat ze het fijn zouden vinden om simpelweg aan te geven <em>&ldquo;ik wil helpen&rdquo;</em> of <em>&ldquo;ik wil een bardienst draaien&rdquo;</em> en vervolgens gewoon ingedeeld te worden op een moment dat past. Dit is een idee waar we als bestuur over moeten stemmen: willen we die optie aanbieden? Ik denk dat dit de drempel flink verlaagt.</li>
+    <li><strong>Bereidheid is er wel, maar heldere verwachtingen ontbreken.</strong> De meeste ouders willen best helpen. Ze haken af als het onduidelijk is wat er van hen gevraagd wordt. Een goed georganiseerd systeem met duidelijke keuzes maakt het verschil.</li>
+    <li><strong>De contributie van D.O.S. is al aan de hoge kant.</strong> Dit kwam in meerdere gesprekken terug. Een eventuele financi&euml;le bijdrage moet daarom laagdrempelig zijn. Op basis van een globale berekening (vergelijking met andere clubs, het huidige aantal taken en ~500 leden) kom ik uit op <strong>&euro;30 per seizoen</strong> als voorstel. Dit is een indicatie die nog afgestemd moet worden op basis van de werkelijke situatie &mdash; zie de doorrekening verderop in dit document (sectie 8).</li>
+    <li><strong>Beloning voor extra inzet werkt motiverend.</strong> Bij clubs waar leden iets terugkrijgen voor extra diensten (bijv. bardiensten) is de bezetting merkbaar beter. Mijn voorstel is een teruggave van <strong>&euro;30 per extra bardienst</strong>. Dit moet simpel bij te houden zijn en voor iedereen gelijk. Belangrijk: de teruggave moet bekostigd kunnen worden uit de binnenkomende clubbijdragen &mdash; de club mag er netto niet op achteruitgaan. Ook hiervoor staat verderop een doorrekening (sectie 8).</li>
+  </ul>
+
+  <div class="highlight">
+    <strong>Dit document is mijn voorstel</strong> op basis van bovenstaande inventarisatie. De bedragen, werkwijze en
+    opzet zijn uitgangspunten die ik voorleg ter bespreking. Het bestuur beslist samen over de definitieve invulling.
+  </div>
+
+  <!-- ============================================================
+       2. HET VOORSTEL
+       ============================================================ -->
+  <h2>2. Het voorstel: &ldquo;Samen voor D.O.S.&rdquo;</h2>
+
+  <div class="highlight green">
+    <strong>Ieder lid draagt bij aan de club &mdash; op de manier die het beste past.</strong><br>
+    Kies zelf een clubtaak uit de seizoensplanning, of steun D.O.S. met een <strong>clubbijdrage van &euro;30</strong> (voorstel, nader vast te stellen).<br>
+    Wie extra bardiensten draait, ontvangt <strong>&euro;30 terug per extra dienst</strong> (voorstel, zie doorrekening sectie 8).
+  </div>
+
+  <h3>Twee gelijkwaardige opties voor elk lid</h3>
+  <p>Elk lid (of ouder/verzorger) krijgt aan het begin van het seizoen een uitnodiging met twee gelijkwaardige keuzes:</p>
+
+  <div class="highlight blue">
+    <strong>Optie 1 &mdash; &ldquo;Ik help mee!&rdquo;</strong><br>
+    Kies zelf een taak uit de seizoensplanning, of geef aan <em>&ldquo;plan mij maar in waar het nodig is&rdquo;</em> en je wordt door de co&ouml;rdinator op een passend moment ingezet. Je kunt een voorkeur opgeven (bijv. bardienst, opbouw, schoonmaak) of het helemaal openlaten.
+  </div>
+  <div class="highlight blue">
+    <strong>Optie 2 &mdash; &ldquo;Ik steun de club financieel&rdquo;</strong><br>
+    Geen tijd of mogelijkheid om fysiek te helpen? Geen probleem. Met een <strong>clubbijdrage van &euro;30</strong> steun je D.O.S. net zo goed. Dit bedrag komt direct ten goede aan de club en helpt om externe hulp of materiaal te bekostigen. Betalen kan eenvoudig via een betaallink of overboeking.
+  </div>
+
+  <p>
+    <em>Belangrijk:</em> beide opties zijn gelijkwaardig. De clubbijdrage is g&eacute;&eacute;n boete, maar een manier om
+    bij te dragen als fysiek helpen niet uitkomt. Zo kan iedereen op zijn eigen manier iets betekenen voor D.O.S.
+  </p>
+
+  <h3>Extra bardiensten: verdien je bijdrage terug</h3>
+  <p>
+    De eerste taak (inclusief bardienst) is de standaard bijdrage van ieder lid.
+    Wie daar bovenop <strong>extra bardiensten</strong> draait, ontvangt <strong>&euro;30 per extra dienst</strong> als dank.
+    Dit maakt het aantrekkelijk om vaker te helpen en zorgt dat de bar altijd goed bezet is.
+  </p>
+
+  <!-- ============================================================
+       3. SEIZOENSKALENDER
+       ============================================================ -->
+  <h2>3. Seizoenskalender: lesweken en planning</h2>
+  <p>
+    Het turnseizoen van D.O.S. loopt gelijk met het schooljaar van het basisonderwijs.
+    Per seizoen zijn er <strong>circa 42&ndash;44 lesweken</strong>, verdeeld over de schoolperiodes.
+    Tijdens schoolvakanties is er geen les en vinden doorgaans geen clubtaken plaats.
+  </p>
+
+  <table class="kalender-tabel">
+    <tr>
+      <th>Periode</th>
+      <th>Maanden</th>
+      <th>Weken</th>
+      <th>Activiteit</th>
+    </tr>
+    <tr class="actief">
+      <td><strong>Blok 1</strong></td>
+      <td>September &ndash; oktober</td>
+      <td>~7 weken</td>
+      <td>Seizoensstart, uitnodiging leden, inschrijving taken</td>
+    </tr>
+    <tr class="vakantie">
+      <td>Herfstvakantie</td>
+      <td>Half oktober</td>
+      <td>1 week</td>
+      <td>Geen les</td>
+    </tr>
+    <tr class="actief">
+      <td><strong>Blok 2</strong></td>
+      <td>November &ndash; december</td>
+      <td>~7 weken</td>
+      <td>Eerste wedstrijden, clubtaken lopen, sluitingsdatum betaling</td>
+    </tr>
+    <tr class="vakantie">
+      <td>Kerstvakantie</td>
+      <td>Eind dec &ndash; begin jan</td>
+      <td>2 weken</td>
+      <td>Geen les</td>
+    </tr>
+    <tr class="actief">
+      <td><strong>Blok 3</strong></td>
+      <td>Januari &ndash; februari</td>
+      <td>~7 weken</td>
+      <td>Wedstrijdperiode, <strong>herinneringsmail</strong> midden seizoen</td>
+    </tr>
+    <tr class="vakantie">
+      <td>Voorjaarsvakantie</td>
+      <td>Februari</td>
+      <td>1 week</td>
+      <td>Geen les</td>
+    </tr>
+    <tr class="actief">
+      <td><strong>Blok 4</strong></td>
+      <td>Maart &ndash; april</td>
+      <td>~7 weken</td>
+      <td>Kampioenschappen, grotere evenementen</td>
+    </tr>
+    <tr class="vakantie">
+      <td>Meivakantie</td>
+      <td>Eind april &ndash; begin mei</td>
+      <td>1&ndash;2 weken</td>
+      <td>Geen les</td>
+    </tr>
+    <tr class="actief">
+      <td><strong>Blok 5</strong></td>
+      <td>Mei &ndash; juni</td>
+      <td>~7 weken</td>
+      <td>Clubshow, grote schoonmaak, seizoensafsluiting</td>
+    </tr>
+    <tr class="vakantie">
+      <td>Zomervakantie</td>
+      <td>Juli &ndash; augustus</td>
+      <td>6 weken</td>
+      <td>Geen les &mdash; evaluatie seizoen, voorbereiding volgend jaar</td>
+    </tr>
+    <tr class="moment">
+      <td colspan="4" style="text-align:center">
+        <strong>Totaal: ~42&ndash;44 lesweken</strong> &nbsp;|&nbsp; ~12 weken vakantie
+      </td>
+    </tr>
+  </table>
+
+  <h3>Belangrijke momenten in het seizoen</h3>
+  <table>
+    <tr><th style="width:200px">Moment</th><th>Wanneer</th><th>Actie</th></tr>
+    <tr>
+      <td><strong>Seizoensuitnodiging</strong></td>
+      <td>September (week 1&ndash;2)</td>
+      <td>E-mail naar alle leden met keuze: help mee of steun financieel</td>
+    </tr>
+    <tr>
+      <td><strong>Sluitingsdatum keuze</strong></td>
+      <td>Eind oktober</td>
+      <td>Leden hebben een keuze gemaakt; betalingen eerste ronde bijwerken</td>
+    </tr>
+    <tr>
+      <td><strong>Herinneringsmail</strong></td>
+      <td>Januari/februari</td>
+      <td>Automatische mail naar leden die nog niets hebben gedaan of betaald</td>
+    </tr>
+    <tr>
+      <td><strong>Seizoensafsluiting</strong></td>
+      <td>Juni</td>
+      <td>Laatste taken, uitbetalingen extra bardiensten, evaluatie</td>
+    </tr>
+  </table>
+
+  <!-- ============================================================
+       4. WORKFLOW
+       ============================================================ -->
+  <h2>4. Seizoensworkflow</h2>
+
+  <div class="schema">
+    <div class="stap">
+      <div class="stap-lijn"><div class="stap-nummer">1</div><div class="stap-streep"></div></div>
+      <div class="stap-inhoud">
+        <h4>Ledenlijst uploaden (augustus/september)</h4>
+        <p>De ledenadministratie exporteert een Excel/CSV uit het bestaande systeem. Dit wordt in de tool ge&iuml;mporteerd &mdash; namen, e-mail en telefoon staan direct klaar.</p>
+      </div>
+    </div>
+
+    <div class="stap">
+      <div class="stap-lijn"><div class="stap-nummer">2</div><div class="stap-streep"></div></div>
+      <div class="stap-inhoud">
+        <h4>Seizoensplanning aanmaken (augustus/september)</h4>
+        <p>In samenwerking met trainers en co&ouml;rdinatoren wordt de volledige jaarplanning gevuld: bardiensten per lesweekenend, op-/afbouw wedstrijden, schoonmaak, scores bijhouden, medailles, etc. Per taak een datum, type en max. aantal deelnemers. Vakanties worden automatisch overgeslagen.</p>
+      </div>
+    </div>
+
+    <div class="stap">
+      <div class="stap-lijn"><div class="stap-nummer">3</div><div class="stap-streep"></div></div>
+      <div class="stap-inhoud">
+        <h4>Uitnodiging naar alle leden (september)</h4>
+        <p>Leden ontvangen een persoonlijke en positieve e-mail: <em>&ldquo;Het nieuwe seizoen begint! Draag bij aan D.O.S. op jouw manier.&rdquo;</em> Met een link naar de inschrijfpagina en twee gelijkwaardige keuzes:<br>
+        <strong>1)</strong> Help mee &mdash; kies een taak of laat je indelen &nbsp;|&nbsp; <strong>2)</strong> Steun financieel &mdash; &euro;30 clubbijdrage<br>
+        Inclusief toelichting over extra bardiensten en de &euro;30 teruggave.</p>
+      </div>
+    </div>
+
+    <div class="stap">
+      <div class="stap-lijn"><div class="stap-nummer">4</div><div class="stap-streep"></div></div>
+      <div class="stap-inhoud">
+        <h4>Leden schrijven zich in (september&ndash;oktober)</h4>
+        <p>Via de gedeelde link opent het lid de planningspagina. De volledige seizoensplanning is zichtbaar. Leden zoeken hun naam, kiezen een taak en schrijven zich in. Ze kunnen een <strong>voorkeur opgeven</strong> (type taak, datum), maar ook: <em>&ldquo;plan mij maar ergens in&rdquo;</em>.</p>
+      </div>
+    </div>
+
+    <div class="stap">
+      <div class="stap-lijn"><div class="stap-nummer">5</div><div class="stap-streep"></div></div>
+      <div class="stap-inhoud">
+        <h4>Betalingen bijwerken &mdash; eerste ronde (november)</h4>
+        <p>Betalingen worden v&oacute;&oacute;r de sluitingsdatum bijgewerkt. Leden die de clubbijdrage hebben betaald worden gemarkeerd. Overzicht wie nog geen keuze heeft gemaakt.</p>
+      </div>
+    </div>
+
+    <div class="stap">
+      <div class="stap-lijn"><div class="stap-nummer">6</div><div class="stap-streep"></div></div>
+      <div class="stap-inhoud">
+        <h4>Herinneringsmail halverwege het seizoen (januari/februari)</h4>
+        <p>Het systeem genereert automatisch een lijst van leden die <strong>nog niet hebben betaald &eacute;n nog geen taak hebben uitgevoerd</strong>. Zij ontvangen een vriendelijke herinnering zodat ze alsnog op tijd actie kunnen ondernemen.</p>
+      </div>
+    </div>
+
+    <div class="stap">
+      <div class="stap-lijn"><div class="stap-nummer">7</div><div class="stap-streep"></div></div>
+      <div class="stap-inhoud">
+        <h4>Taken bevestigen, uitbetalen &amp; afsluiting (doorlopend + juni)</h4>
+        <p>Na afloop van een taak markeert de co&ouml;rdinator deze als &ldquo;uitgevoerd&rdquo;. Extra bardiensten worden bijgehouden en uitbetaald (&euro;30 per extra dienst). Aan het einde van het seizoen is alles inzichtelijk via het dashboard.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       5. COMMUNICATIE NAAR LEDEN
+       ============================================================ -->
+  <h2>5. Communicatie naar leden &mdash; positief en helder</h2>
+  <p>
+    De toon van alle communicatie is <strong>positief, uitnodigend en dankbaar</strong>. We benadrukken dat
+    de club draait op de inzet van iedereen, en dat er twee gelijkwaardige manieren zijn om bij te dragen.
+  </p>
+
+  <h3>Voorbeeld: seizoensuitnodiging (e-mail)</h3>
+  <div class="highlight" style="background:#f8f9ff;border-color:#8e99c4;font-size:.88rem">
+    <p style="margin-bottom:8px"><strong>Onderwerp:</strong> <em>Nieuw seizoen, samen sterk! Draag bij aan D.O.S.</em></p>
+    <p>Beste [naam],</p>
+    <p>
+      Het nieuwe turnseizoen staat voor de deur! D.O.S. draait op de inzet van onze leden en we zijn trots op
+      hoe we dat samen doen. Ook dit seizoen vragen we ieder lid om een bijdrage &mdash; op de manier die het beste bij jou past:
+    </p>
+    <p>
+      <strong>Optie 1: Help mee!</strong><br>
+      Kies een clubtaak uit de seizoensplanning (bardienst, op-/afbouw, schoonmaak, etc.).
+      Geen voorkeur? Vink &ldquo;plan mij maar in&rdquo; aan en wij regelen de rest.
+    </p>
+    <p>
+      <strong>Optie 2: Steun financieel</strong><br>
+      Niet in de gelegenheid om fysiek te helpen? Met een clubbijdrage van &euro;30 steun je D.O.S. net zo goed.
+      Dit bedrag investeren we direct in onze club.
+    </p>
+    <p>
+      <strong>Bonus:</strong> wie meer dan &eacute;&eacute;n bardienst draait, ontvangt &euro;30 terug per extra dienst!
+    </p>
+    <p>Bekijk de planning en meld je aan: <strong>[link]</strong></p>
+    <p>Bedankt voor je inzet!<br>Het bestuur van D.O.S.</p>
+  </div>
+
+  <h3>Voorbeeld: herinneringsmail (januari/februari)</h3>
+  <div class="highlight" style="background:#fff8f0;border-color:#e67e22;font-size:.88rem">
+    <p style="margin-bottom:8px"><strong>Onderwerp:</strong> <em>Herinnering: je bijdrage aan D.O.S. dit seizoen</em></p>
+    <p>Beste [naam],</p>
+    <p>
+      We zijn halverwege het seizoen en we zien dat je nog geen taak hebt uitgevoerd of clubbijdrage hebt betaald.
+      Geen probleem &mdash; er zijn nog volop mogelijkheden!
+    </p>
+    <p>
+      Bekijk de beschikbare taken: <strong>[link]</strong><br>
+      Of betaal de clubbijdrage van &euro;30: <strong>[betaallink]</strong>
+    </p>
+    <p>
+      We rekenen op je! Bij vragen kun je altijd terecht bij je trainer of de vrijwilligersco&ouml;rdinator.
+    </p>
+    <p>Sportieve groet,<br>Het bestuur van D.O.S.</p>
+  </div>
+
+  <!-- ============================================================
+       6. DE TOOL
+       ============================================================ -->
+  <h2>6. Hoe werkt de tool?</h2>
+  <p>Er is een webapplicatie gebouwd die het volledige proces ondersteunt. De tool draait in de browser en heeft twee weergaven:</p>
+
+  <h3>Beheerder (bestuur / co&ouml;rdinator)</h3>
+  <table>
+    <tr><th style="width:160px">Module</th><th>Wat het doet</th></tr>
+    <tr><td><strong>Dashboard</strong></td><td>Live overzicht: hoeveel leden actief, betaald, nog geen keuze gemaakt. Voortgangsbalken en opbrengst in &eacute;&eacute;n oogopslag.</td></tr>
+    <tr><td><strong>Leden</strong></td><td>Ledenlijst beheren. Handmatig toevoegen of <strong>CSV/Excel importeren</strong>. Zoeken, filteren, status per lid.</td></tr>
+    <tr><td><strong>Taken</strong></td><td>Alle taken aanmaken: type (bardienst, schoonmaak, op-/afbouw, etc.), datum, max deelnemers, co&ouml;rdinator toewijzen.</td></tr>
+    <tr><td><strong>Planning</strong></td><td>Visueel seizoensoverzicht met bezettingsgraad per taak. <strong>Deelbare link</strong> voor leden.</td></tr>
+    <tr><td><strong>Bardienst</strong></td><td>Overzicht bardiensten, extra diensten bijhouden, uitbetalingen registreren (&euro;30 per extra dienst).</td></tr>
+    <tr><td><strong>Maillijst</strong></td><td>Automatisch gegenereerde lijst van leden die nog geen keuze hebben gemaakt. E-mailadressen klaar voor kopieer &amp; plak.</td></tr>
+    <tr><td><strong>Export</strong></td><td>Alles exporteerbaar als CSV. Volledige back-up en herstel mogelijk.</td></tr>
+  </table>
+
+  <h3>Ledenweergave (aparte pagina)</h3>
+  <p>
+    Leden openen een simpele pagina via een gedeelde link. Ze zien <strong>alleen de planning</strong> &mdash; geen toegang tot de rest.
+    Ze zoeken hun naam, kiezen een taak en schrijven zich in. Per taak is zichtbaar hoeveel plekken er nog vrij zijn.
+  </p>
+
+  <!-- ============================================================
+       7. VERIFICATIE
+       ============================================================ -->
+  <h2>7. Verificatie: hoe bevestigen we uitgevoerde taken?</h2>
+  <p>Dit is een belangrijk punt om samen te bepalen. Drie opties:</p>
+
+  <div class="highlight orange">
+    <strong>Optie A &mdash; Co&ouml;rdinator per afdeling</strong><br>
+    Iedere groep binnen D.O.S. wijst een co&ouml;rdinator aan. Na een taak bevestigt deze persoon in het systeem dat het is uitgevoerd.
+  </div>
+  <div class="highlight orange">
+    <strong>Optie B &mdash; Trainer/begeleider bevestigt bardienst</strong><br>
+    De bardiensten vinden plaats tijdens de lessen. De trainer of begeleider die op dat moment toch al aanwezig is, kan bevestigen of de bardienst daadwerkelijk is bezet geweest. Zo hoeft er geen extra persoon aanwezig te zijn om dit te controleren.
+  </div>
+  <div class="highlight orange">
+    <strong>Optie C &mdash; Combinatie (aanbevolen)</strong><br>
+    E&eacute;n vaste co&ouml;rdinator beheert het systeem. Trainers en begeleiders melden per evenement terug (bijv. via WhatsApp-groep of kort berichtje). De co&ouml;rdinator werkt het systeem bij. Laagdrempelig en werkbaar.
+  </div>
+
+  <!-- ============================================================
+       8. VERWACHT RENDEMENT
+       ============================================================ -->
+  <h2>8. Verwacht rendement &mdash; doorrekening</h2>
+  <p>
+    Onderstaande doorrekening is een <strong>globale prognose</strong> op basis van ervaringscijfers bij vergelijkbare
+    sportverenigingen, toegepast op <strong>circa 500 leden</strong>. De exacte bedragen en percentages moeten
+    nog worden afgestemd op de werkelijke situatie van D.O.S.
+  </p>
+
+  <h3>A. Inkomsten: clubbijdragen</h3>
+  <table>
+    <tr><th>Scenario</th><th class="getal">Leden</th><th class="getal">Bedrag</th></tr>
+    <tr>
+      <td>Helpt mee met minimaal 1 taak (vrijwilliger)</td>
+      <td class="getal">~60% = 300</td>
+      <td class="getal">&mdash;</td>
+    </tr>
+    <tr>
+      <td>Kiest voor &euro;30 clubbijdrage</td>
+      <td class="getal">~30% = 150</td>
+      <td class="getal" style="color:#27ae60;font-weight:700">+ &euro;4.500</td>
+    </tr>
+    <tr>
+      <td>Reageert niet (herinnering nodig)</td>
+      <td class="getal">~10% = 50</td>
+      <td class="getal" style="color:#888">&euro;0 *</td>
+    </tr>
+    <tr>
+      <td colspan="2" style="border-top:2px solid #1a1a6c;font-weight:700">
+        Geschatte bruto inkomsten
+      </td>
+      <td class="getal" style="border-top:2px solid #1a1a6c;font-weight:700;color:#27ae60;font-size:1.05rem">
+        &euro;4.500 &ndash; &euro;6.000
+      </td>
+    </tr>
+  </table>
+  <p style="font-size:.82rem;color:#888">
+    * Na herinneringsmail komt naar verwachting ~50% alsnog in actie (betalen of taak), wat de inkomsten naar ~&euro;5.250 brengt.
+  </p>
+
+  <h3>B. Bardiensten: opzet en prognose teruggave</h3>
+  <p>
+    Een bardienst is een shift van <strong>circa 3 uur</strong> (nader definitief vast te stellen).
+    Bardiensten vinden plaats tijdens de lessen, minimaal <strong>2&times; per week</strong>: woensdag en zaterdag.
+    De teruggave moet volledig bekostigd worden uit de binnenkomende clubbijdragen &mdash; de club mag er netto niet op achteruitgaan.
+  </p>
+  <table>
+    <tr><th>Aanname</th><th class="getal">Aantal</th><th>Toelichting</th></tr>
+    <tr>
+      <td>Lesweken per seizoen</td>
+      <td class="getal">~42</td>
+      <td>Excl. schoolvakanties</td>
+    </tr>
+    <tr>
+      <td>Bardiensten per week</td>
+      <td class="getal">2</td>
+      <td>Woensdag + zaterdag (shifts van ~3 uur)</td>
+    </tr>
+    <tr>
+      <td>Totaal bardiensten per seizoen</td>
+      <td class="getal">~84</td>
+      <td>42 weken &times; 2 diensten</td>
+    </tr>
+    <tr>
+      <td>Personen per bardienst</td>
+      <td class="getal">2</td>
+      <td>Standaard bezetting</td>
+    </tr>
+    <tr>
+      <td>Totaal bardienstplekken</td>
+      <td class="getal">~168</td>
+      <td>84 diensten &times; 2 personen</td>
+    </tr>
+    <tr>
+      <td>&ldquo;Eerste taak&rdquo;-bardiensten</td>
+      <td class="getal">~100</td>
+      <td>Leden die bardienst als hun verplichte taak kiezen</td>
+    </tr>
+    <tr>
+      <td style="font-weight:700">Geschatte extra bardiensten</td>
+      <td class="getal" style="font-weight:700">~68</td>
+      <td>Plekken die overblijven en door extra-inzet worden gevuld</td>
+    </tr>
+  </table>
+
+  <h3>C. Netto resultaat vrijwilligersbijdrage per seizoen</h3>
+  <table>
+    <tr><th></th><th class="getal">Bij &euro;30 teruggave</th><th class="getal">Bij &euro;20 teruggave</th></tr>
+    <tr>
+      <td><strong>Bruto inkomsten</strong> (clubbijdragen)</td>
+      <td class="getal" style="color:#27ae60;font-weight:700">&euro;4.500 &ndash; &euro;6.000</td>
+      <td class="getal" style="color:#27ae60;font-weight:700">&euro;4.500 &ndash; &euro;6.000</td>
+    </tr>
+    <tr>
+      <td><strong>Teruggave</strong> (~68 extra bardiensten)</td>
+      <td class="getal" style="color:#c0392b">- &euro;2.040</td>
+      <td class="getal" style="color:#c0392b">- &euro;1.360</td>
+    </tr>
+    <tr style="font-size:.95rem">
+      <td style="border-top:2px solid #1a1a6c;font-weight:700">Netto resultaat</td>
+      <td class="getal" style="border-top:2px solid #1a1a6c;font-weight:700;color:#27ae60;font-size:1.05rem">
+        &euro;2.460 &ndash; &euro;3.960
+      </td>
+      <td class="getal" style="border-top:2px solid #1a1a6c;font-weight:700;color:#27ae60;font-size:1.05rem">
+        &euro;3.140 &ndash; &euro;4.640
+      </td>
+    </tr>
+  </table>
+
+  <div class="highlight">
+    <strong>Conclusie:</strong> bij 2 bardiensten per week en &euro;30 teruggave per extra dienst blijft het systeem positief
+    (netto &euro;2.460&ndash;&euro;3.960). Bij &euro;20 teruggave is het netto resultaat hoger (&euro;3.140&ndash;&euro;4.640),
+    maar het verschil van ~&euro;680 per seizoen moet worden afgewogen tegen de motiverende werking van een hoger bedrag.
+    <strong>Voorstel: &euro;30 per extra bardienst</strong> &mdash; een ronde, eerlijke beloning die motiveert en
+    ruimschoots bekostigd wordt uit de clubbijdragen. De exacte bedragen worden vastgesteld zodra we de werkelijke
+    aantallen taken en leden in kaart hebben.
+  </div>
+
+  <p style="font-size:.82rem;color:#888">
+    <strong>Let op:</strong> bovenstaande is een globale indicatie. De exacte percentages en aantallen worden
+    na het eerste seizoen ge&euml;valueerd. Bij meer of minder extra bardiensten verschuift het resultaat,
+    maar het systeem blijft in alle realistische scenario's kostendekkend.
+  </p>
+
+  <div class="highlight green">
+    <strong>Naast de financi&euml;le opbrengst:</strong>
+    <ul style="margin-top:8px;margin-bottom:0">
+      <li>Meer ingevulde taken = minder werkdruk op het vaste kader vrijwilligers</li>
+      <li>Duidelijke, positieve communicatie versterkt de clubcultuur</li>
+      <li>Transparantie: iedereen ziet dezelfde planning en kan vooruit plannen</li>
+      <li>Gestructureerde herinneringen in plaats van persoonlijk achter leden aanlopen</li>
+      <li>300 actieve vrijwilligers per seizoen = een breed gedragen clubgevoel</li>
+    </ul>
+  </div>
+
+  <!-- ============================================================
+       9. TODO / ROADMAP
+       ============================================================ -->
+  <div class="page-break"></div>
+  <h2>9. Actielijst &mdash; Roadmap naar implementatie</h2>
+  <p>Onderstaande stappen moeten worden doorlopen v&oacute;&oacute;r de start van het nieuwe seizoen (september 2026).</p>
+
+  <ul class="todo-lijst">
+    <li>
+      <div class="todo-check"></div>
+      <div class="todo-tekst">
+        <strong>1. Berekening en vaststelling clubbijdrage</strong>
+        <span>Mijn voorstel is &euro;30 op basis van een vergelijking met andere clubs en de al hoge contributie van D.O.S. Dit bedrag moet door het bestuur worden vastgesteld. Doorrekening maken: wat levert het op bij verschillende percentages? Welk bedrag is eerlijk en haalbaar? Definitief bedrag vaststellen v&oacute;&oacute;r de ALV.</span>
+      </div>
+    </li>
+    <li>
+      <div class="todo-check"></div>
+      <div class="todo-tekst">
+        <strong>2. Stemming: willen we de &ldquo;deel mij maar in&rdquo;-optie aanbieden?</strong>
+        <span>Uit mijn inventarisatie blijkt dat veel ouders het fijn vinden om aan te geven dat ze willen helpen en vervolgens gewoon ingedeeld te worden. Dit verlaagt de drempel, maar vraagt extra werk van co&ouml;rdinatoren. Beslispunt: bieden we deze optie aan naast zelf kiezen? Zo ja: hoe gaan co&ouml;rdinatoren de indeling doen?</span>
+      </div>
+    </li>
+    <li>
+      <div class="todo-check"></div>
+      <div class="todo-tekst">
+        <strong>3. Taken vaststellen i.s.m. trainers en belanghebbenden</strong>
+        <span>Inventariseer alle taken die per seizoen nodig zijn: bardiensten, op-/afbouw wedstrijden, schoonmaak, scores, medailles, muziek, omroepen, intekenen, etc. Bespreek met trainers welke taken per groep/afdeling nodig zijn en hoeveel mensen er per taak nodig zijn. Stel het maximaal aantal deelnemers per taak vast.</span>
+      </div>
+    </li>
+    <li>
+      <div class="todo-check"></div>
+      <div class="todo-tekst">
+        <strong>4. Jaarplanning maken op basis van lesweken</strong>
+        <span>Plan alle taken op de juiste data, rekening houdend met ~42&ndash;44 lesweken en de schoolvakanties (herfst, kerst, voorjaar, mei, zomer). Neem de wedstrijdkalender en clubevenementen (clubshow, grote schoonmaak, etc.) als basis. Wijs per evenement de benodigde taken toe.</span>
+      </div>
+    </li>
+    <li>
+      <div class="todo-check"></div>
+      <div class="todo-tekst">
+        <strong>5. Keuze registratiesysteem</strong>
+        <span>Eerst bekijken of de huidige middelen voldoen: kan de bestaande clubapp dit ondersteunen? Zo ja, dan hoeven we niets nieuws te bouwen. Zo nee, dan bekijken we of we verder gaan met de nieuwe webapplicatie die in ontwikkeling is, of dat een ander alternatief geschikter is. Na de keuze: systeem inrichten, ledenlijst importeren, taken aanmaken, co&ouml;rdinatoren toewijzen. Testrun uitvoeren met een kleine groep.</span>
+      </div>
+    </li>
+    <li>
+      <div class="todo-check"></div>
+      <div class="todo-tekst">
+        <strong>6. Communicatieopzet afstemmen</strong>
+        <span>Er zijn conceptteksten opgesteld voor de seizoensuitnodiging en de herinneringsmail (zie sectie 5). Deze concepten moeten worden afgestemd met het bestuur: is de toon goed? Klopt de inhoud? Moeten er aanpassingen worden gedaan? Daarnaast: kanaalkeuze bepalen (e-mail, eventueel aanvullend via WhatsApp/clubapp) en betaallink of betaalinstructie voor de clubbijdrage opstellen.</span>
+      </div>
+    </li>
+    <li>
+      <div class="todo-check"></div>
+      <div class="todo-tekst">
+        <strong>7. Co&ouml;rdinatoren aanwijzen per afdeling</strong>
+        <span>Minimaal 1 co&ouml;rdinator per afdeling die verantwoordelijk is voor het bijwerken van de taken in het systeem. Afspraken maken over hoe trainers terugkoppelen (WhatsApp-groep, formulier, mondeling).</span>
+      </div>
+    </li>
+    <li>
+      <div class="todo-check"></div>
+      <div class="todo-tekst">
+        <strong>8. Algemene Ledenvergadering (ALV)</strong>
+        <span>Het vrijwilligersbeleid presenteren en laten goedkeuren door de ALV. Stemming over het beleid, de hoogte van de bijdrage en de &ldquo;deel mij maar in&rdquo;-optie. Zie agendavoorstel hieronder.</span>
+      </div>
+    </li>
+    <li>
+      <div class="todo-check"></div>
+      <div class="todo-tekst">
+        <strong>9. Go-live: seizoensstart september 2026</strong>
+        <span>Ledenlijst definitief importeren, planning publiceren, eerste uitnodigingsmail versturen. Eerste seizoen geldt als pilot &mdash; evaluatie aan het einde van het seizoen.</span>
+      </div>
+    </li>
+  </ul>
+
+  <!-- ============================================================
+       10. ALV VOORSTEL
+       ============================================================ -->
+  <h2>10. ALV &mdash; Algemene Ledenvergadering</h2>
+  <p>
+    Het vrijwilligersbeleid wordt gepresenteerd en ter stemming gebracht op de Algemene Ledenvergadering.
+  </p>
+  <div class="highlight">
+    <strong>Stempunten voor de ALV:</strong>
+    <ol style="margin-top:8px;margin-bottom:0">
+      <li>Invoering vrijwilligersbeleid &ldquo;Samen voor D.O.S.&rdquo; (ja/nee)</li>
+      <li>Vaststelling hoogte clubbijdrage (voorstel: &euro;30 per seizoen)</li>
+      <li>Aanbieden van de &ldquo;deel mij maar in&rdquo;-optie naast zelf kiezen (ja/nee)</li>
+      <li>Hoogte teruggave extra bardiensten (voorstel: &euro;30 per dienst)</li>
+      <li>Pilot seizoen 2026&ndash;2027 met evaluatie aan het einde van het seizoen</li>
+    </ol>
+  </div>
+
+  <div style="background:#fafbfe;border:1px solid #e4e7f0;border-radius:10px;padding:24px 28px;margin:16px 0;text-align:center">
+    <p style="font-size:.95rem;color:#888;font-style:italic;margin-bottom:0">Hier komt de agenda voor de ALV</p>
+  </div>
+
+  <!-- ============================================================
+       11. SAMENVATTING
+       ============================================================ -->
+  <h2>11. Samenvatting</h2>
+  <table>
+    <tr><th style="width:220px">Onderdeel</th><th>Afspraak</th></tr>
+    <tr><td>Bijdrage per lid</td><td>1 clubtaak per seizoen <strong>of</strong> &euro;30 clubbijdrage (voorstel, nader vast te stellen)</td></tr>
+    <tr><td>Framing</td><td>Positief en gelijkwaardig &mdash; geen boete, maar een keuze</td></tr>
+    <tr><td>Extra bardienst</td><td>&euro;30 teruggave per extra dienst (voorstel, zie doorrekening)</td></tr>
+    <tr><td>Seizoen</td><td>~42&ndash;44 lesweken (september&ndash;juni), schoolvakanties vrij</td></tr>
+    <tr><td>Inschrijving</td><td>Zelf kiezen, voorkeur opgeven, of &ldquo;deel mij in&rdquo;</td></tr>
+    <tr><td>Herinneringsmail</td><td>Halverwege seizoen (januari/februari)</td></tr>
+    <tr><td>Verificatie</td><td>Co&ouml;rdinator + terugkoppeling trainers</td></tr>
+    <tr><td>Goedkeuring</td><td>Via ALV, pilot seizoen 2026&ndash;2027</td></tr>
+    <tr><td>Tooling</td><td>Webapplicatie gebouwd en klaar voor demo</td></tr>
+  </table>
+
+  <!-- ============================================================
+       FOOTER
+       ============================================================ -->
+  <div class="doc-footer">
+    D.O.S. Vrijwilligersbeleid &ldquo;Samen voor D.O.S.&rdquo; &mdash; voorstel bestuursvergadering 25-02-2026<br>
+    Digitale tool: klaar voor demonstratie &middot; ALV-agendapunt: bijgevoegd
+  </div>
+
+</body>
+</html>
